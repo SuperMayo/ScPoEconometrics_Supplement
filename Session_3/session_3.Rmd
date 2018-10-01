@@ -1,0 +1,88 @@
+---
+title: "Session_3"
+author: "Antoine Mayerowitz"
+date: "24/09/2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r, include: FALSE, warning = FALSE, echo = FALSE, error = TRUE, include=FALSE}
+# Set language environment to english
+Sys.setenv(LANG = "en")
+
+# A cool package manager
+if (!require("pacman")) install.packages("pacman")
+
+# Install and/or load needed packages
+pacman::p_load(tidyverse, # Many tools for data handling. Check https://www.tidyverse.org/
+               devtools,  # Needed to download ScPoEconometrics package
+               rvcheck    # Used to check ScPoEconometrics package version
+              )
+
+# Install and/or update and/or load the ScPo package
+if (!check_github("ScPoEcon/ScPoEconometrics")$up_to_date) {
+   install_github("ScPoEcon/ScPoEconometrics") 
+}
+library("ScPoEconometrics")
+```
+
+# Chaper 2 - Working with data
+```{r}
+data("mpg")
+dim(mpg)
+nrow(mpg)
+ncol(mpg)
+names(mpg)
+head(mpg)
+tail(mpg)
+
+str(mpg)
+```
+## Summary statistics
+```{r}
+# central tendency
+x = runif(10)
+mean(x)
+sum(x) / length(x)
+median(x)
+
+# Spread
+var(x)
+sd(x)
+
+myVar  = sum((x-mean(x))^2) / (length(x) - 1)
+mySd = sqrt(myVar)
+
+# Misc.
+range(x)
+
+table(mpg$drv, mpg$class)
+```
+## Plots
+### Histogram
+```{r}
+hist(mpg$hwy, xlab = "Miles per Gallon", main = "My Histogram", breaks =12, col = "blue")
+```
+### Boxplots
+```{r}
+boxplot(hwy ~ drv, data = mpg)
+```
+### Scatter plot
+```{r}
+plot(mpg$displ, mpg$hwy)
+plot( hwy ~ displ, data = mpg)
+```
+### TUTORIAL
+`runTutorial('chapter2')`
+`runTutorial('correlation')`
+
+### Tydiverse ??
+#### Dplyr
+```{r}
+data = mpg %>%
+  filter(hwy > 30) %>%
+  mutate(Test = hwy / cty) %>%
+  select(manufacturer, Test, hwy)
+```
+

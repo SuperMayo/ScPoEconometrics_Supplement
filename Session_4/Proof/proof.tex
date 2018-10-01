@@ -1,0 +1,223 @@
+%!TEX program = xelatex
+
+\documentclass[a4paper,12pt]{article}
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\usepackage{csquotes}
+\setdefaultlanguage{english}
+\usepackage[titletoc,toc,title]{appendix}
+\usepackage{mathpazo}
+\setmainfont
+     [ BoldFont       = texgyrepagella-bold.otf ,
+       ItalicFont     = texgyrepagella-italic.otf ,
+       BoldItalicFont = texgyrepagella-bolditalic.otf ]
+     {texgyrepagella-regular.otf}
+\usepackage{setspace}
+
+\setstretch{1.10}
+\usepackage{amsmath, amsfonts, amssymb, amsthm, dsfont,cancel}
+\usepackage{graphicx, float}
+\usepackage{tikz, color, xcolor} % For artists
+\usepackage[hmargin=3.5cm,vmargin=3cm]{geometry}
+\usepackage{setspace}
+\usepackage{enumerate} % For (i) (ii) items in enumerate
+
+\newcommand\bhat[1]{\hat{b}_#1}
+\newcommand\sumin{\sum_{i=1}^N}
+
+\title{Quick proof on univariate OLS estimator}
+\author{Antoine Mayerowitz}
+
+\begin{document}
+
+\maketitle
+
+We suppose that the data consist of $N$ observations $\{y_i, x_i\}_{i=1}^N$ where each observation $i$ consist of a dependent variable $y_i$ and an explanatory variable $x_i$. We suppose a linear relationship in our variables such that
+\begin{equation}
+	y_i = b_0 + b_1 x_i + \varepsilon_i
+\end{equation}
+Where $b_0$ and $b_1$ are scalars, shared by all observations and $\varepsilon_i$ is the error term.
+
+Our goal is to find $b_0$ and $b_1$ such that the \emph{sum of squared of residuals}(SSR) is minimized. Where the SSR is defined by
+\begin{align*}
+	SRR &= \sumin e^2 \\
+			&= \sumin (y_i-\bhat{0}-\bhat{1}x_i)^2
+\end{align*}
+
+Mathematicaly we seek
+
+\begin{equation}
+	\min_{\bhat{0},\bhat{1}} \sumin (y_i-\bhat{0}-\bhat{1}x_i)^2
+\end{equation}
+
+As we need to minimize a quadratic function, we take the derivative with respect to both argument and equalize to 0.
+
+\[
+\begin{cases}
+	\dfrac{\partial \; SSR}{\partial \bhat{0}} = -2 \sumin (y_i-\bhat{0}-\bhat{1}x_i) \\
+	~\\
+	\dfrac{\partial \; SSR}{\partial \bhat{1}} = -2 \sumin x_i (y_i-\bhat{0}-\bhat{1}x_i) \\
+\end{cases}
+\]
+
+Then we equalize both equations to 0
+\[
+\begin{cases}
+	-2 \sumin (y_i-\bhat{0}-\bhat{1}x_i) &= 0 \\
+	-2 \sumin x_i (y_i-\bhat{0}-\bhat{1}x_i) &= 0 \\
+\end{cases}
+\]
+
+We now have our system of 2 equations with 2 unknowns that we need to solve for $\bhat{0}$ and $\bhat{1}$
+
+We simplify
+\[
+\begin{cases}
+	\cancel{-2} \sumin (y_i-\bhat{0}-\bhat{1}x_i) &= 0 \\
+	\cancel{-2} \sumin x_i (y_i-\bhat{0}-\bhat{1}x_i) &= 0 \\
+\end{cases}
+\]
+
+Rewriting
+
+\[
+\begin{cases}
+	\sumin y_i &= \sumin \bhat{0} + \bhat{1} \sumin x_i\\
+	\sumin x_i y_i &= \bhat{0} \sumin x_i  + \bhat{1} \sumin x_i^2 \\
+\end{cases}
+\]
+
+Using the fact that $\sum_{k=1}^K a = K\times a$ and that $\bhat{0}$ do not depends on $i$ we get
+
+\[
+\begin{cases}
+	\sumin y_i &= N \bhat{0} + \bhat{1} \sumin x_i\\
+	\sumin x_i y_i &= \bhat{0} \sumin x_i  + \bhat{1} \sumin x_i^2 \\
+\end{cases}
+\]
+
+We multiply the first equation by $\frac{1}{N}$
+
+\[
+\begin{cases}
+	\frac{1}{N}\sumin y_i &= \frac{1}{N} N \bhat{0} + \bhat{1} \frac{1}{N} \sumin x_i\\
+	\sumin x_i y_i &= \bhat{0} \sumin x_i  + \bhat{1} \sumin x_i^2 \\
+\end{cases}
+\]
+
+We define the average $z$ by $\bar{z} := \frac{1}{N}\sumin z_i$.
+
+\[
+\begin{cases}
+	\bar{y} &= \bhat{0} + \bhat{1} \bar{x}\\
+	\sumin x_i y_i &= \bhat{0} \sumin x_i  + \bhat{1} \sumin x_i^2 \\
+\end{cases}
+\]
+
+We rewrite to get an expression of $\bhat{0}$
+\[
+\begin{cases}
+	\bhat{0} &= \bar{y} - \bhat{1} \bar{x}\\
+	\sumin x_i y_i &= \bhat{0} \sumin x_i  + \bhat{1} \sumin x_i^2 \\
+\end{cases}
+\]
+
+We substitute the first equation in the second
+\[
+\begin{cases}
+	\bhat{0} &= \bar{y} - \bhat{1} \bar{x}\\
+	\sumin x_i y_i &= (\bar{y} - \bhat{1} \bar{x}) \sumin x_i  + \bhat{1} \sumin x_i^2 \\
+\end{cases}
+\]
+
+Developing
+
+\[
+\begin{cases}
+	\bhat{0} &= \bar{y} - \bhat{1} \bar{x}\\
+	\sumin x_i y_i &= \bar{y} \sumin x_i - \bhat{1} \bar{x} \sumin x_i  + \bhat{1} \sumin x_i^2 \\
+\end{cases}
+\]
+
+We factor by $\bhat{1}$
+\[
+\begin{cases}
+	\bhat{0} &= \bar{y} - \bhat{1} \bar{x}\\
+	\sumin x_i y_i &= \bar{y} \sumin x_i + \bhat{1} \left(\sumin x_i^2 - \bar{x} \sumin x_i \right)\
+\end{cases}
+\]
+
+Isolating $\bhat{1}$
+
+\[
+\begin{cases}
+	\bhat{0} &= \bar{y} - \bhat{1} \bar{x}\\
+	~ \\
+	\bhat{1} &= \dfrac{\sumin x_i y_i - \bar{y} \sumin x_i}{\sumin x_i^2 - \bar{x} \sumin x_i} 
+\end{cases}
+\]
+
+After a bit of algebra (see appendix), one can simplify to
+
+\[
+\begin{cases}
+	\bhat{0} &= \bar{y} - \bhat{1} \bar{x}\\
+	~ \\
+	\bhat{1} &= \dfrac{\sumin (y_i - \bar{y}) (x_i - \bar{x})}{\sumin (x_i - \bar{x})^2}
+\end{cases}
+\]
+
+Which is strictly equivalent to 
+
+\[
+\begin{cases}
+	\bhat{0} &= \bar{y} - \bhat{1} \bar{x}\\
+	~ \\
+	\bhat{1} &= \dfrac{Cov(x,y)}{Var(x)}
+\end{cases}
+\]
+
+
+\clearpage
+\begin{appendices}
+\section{Simplifying $\bhat{1}$}
+\subsection{Finding the covariance}
+\[
+\sumin x_i y_i - \bar{y} \sumin x_i =  N \times Cov(x,y)
+\]
+This proof need some tricks and heavily play with the fact that $\sumin x_i = \bar{x}$ and that $\sumin \bar{y} = N \bar{y}$. For example, one could write
+\[
+	\bar{y} \sumin x_i = N\bar{y}\bar{x} = \sumin \bar{x}\bar{y} =\sumin y_i \bar{x}
+\]
+
+\begin{proof}
+	\begin{align*}
+		\sumin x_i y_i - \bar{y} \sumin x_i &= \sumin x_i y_i - N\bar{y}\bar{x}\\
+		&= \sumin x_i y_i - N\bar{y}\bar{x} - N\bar{y}\bar{x} +  N\bar{y}\bar{x}\\
+		&= \sumin x_i y_i - \sumin x_i \bar{y} - \sumin \bar{x} y_i +  \sumin \bar{y}\bar{x} \\
+		& = \sumin (x_i y_i -  x_i \bar{y} - \bar{x} y_i + \bar{y}\bar{x}) \\
+		&= \sumin (y_i - \bar{y}) (x_i - \bar{x}) \\ 
+		&= N \times Cov(x,y)
+	\end{align*}
+\end{proof}
+
+\subsection{Finding the variance}
+\[
+\sumin x_i^2 - \bar{x} \sumin x_i = N \times Var(x)
+\]
+This proof is very similar to the one for covariance.
+
+\begin{proof}
+	\begin{align*}
+		\sumin x_i^2 - \bar{x} \sumin x_i &= \sumin x_i^2 - N\bar{x}\bar{x}\\
+		&= \sumin x_i^2 - 2N\bar{x}\bar{x} + N\bar{x}\bar{x} \\
+		&= \sumin x_i^2 - 2 \bar{x} \sumin x_i + N\bar{x}^2 \\
+		&= \sumin (x_i^2 - 2\bar{x}x_i + \bar{x}^2) \\
+		&= \sumin (x - \bar{x})^2 \\
+		&= N \times Var(x)
+	\end{align*}
+\end{proof}
+
+\end{appendices}
+
+\end{document}
