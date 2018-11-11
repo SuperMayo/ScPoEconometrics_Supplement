@@ -5,7 +5,6 @@ date: "`r Sys.Date()`"
 output:
   ioslides_presentation:
     highlight: textmate
-    logo: ../../images/ScPo.png
     self_contained: no
     widescreen: true
 ---
