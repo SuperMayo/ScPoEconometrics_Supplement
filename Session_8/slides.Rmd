@@ -1,0 +1,149 @@
+---
+title: "Standard errors & Inference"
+author: "Antoine Mayerowitz"
+date: "`r Sys.Date()`"
+output:
+  ioslides_presentation:
+    highlight: textmate
+    logo: ../../images/ScPo.png
+    self_contained: no
+    widescreen: true
+---
+<style>
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# What is true ?
+
+## Estimating parameters
+> - In previous chapters, we have been using OLS to compute some parameters.
+> - We saw that $b_0,\; b_1, \ldots$ are some *estimates* of some unknown parameters in the *population*.
+> - With another *sample*, we could get different *estimated value* of the population parameters.
+> - We have some *uncertainy* about the "real" parameters in the population.
+> - Therefore, how *confident* can we be about the *estimated values* $b_0, b_1, \ldots$ ?
+
+## What is a Statistical Model?
+> - Writing a model (and its **assumptions**) is in fact defining how the data have been *generated*. (A Data Generating Process or DGP)
+> - Once we know how data is generated, we could compare it to the data we actually observe.
+
+
+# The Classical Regression Model
+
+## Classical Linear Model Assumption
+
+> - $$ y_i = \beta_0 + \beta_1 x_i + \varepsilon_i$$
+> - 1.The data are not **linearly dependent** and for a given data vector $x$ we have $Var(x) \neq 0$
+> - 2.The mean of the residuals conditional on $x$ is equal to $0$. $E[\varepsilon|x] = 0$ and $Cov(\varepsilon, x) = 0$. *ie* $x$ is **strictly exogenous** to the model.
+> - These are the smallest set of assumptions needed to run an OLS, but we often add the two following:
+> - 3.The data are drawn from a **random sample**.
+> - 4.The variance of the error term $\varepsilon$ is the same for each value of $x$. This property is called **homoskedasticity**.
+
+## Sampling error
+> - $\beta_0$ and $\beta_1$ are assumed to be the **true** parameters values which generated the data !
+> - When we run an OLS we get $b_0$ and $b_1$, they can be different from $\beta_0$ and $\beta_1$.
+> - $b_0$ and $b_1$ are computed from a *sample* of the population. With a different sample we could get another set of estimates.
+> - This means that we get *sampling variation* in our estimates.
+> - We want to know how close $b_0$ and $b_1$ are from $\beta_0$ and $\beta_1$.
+
+## Standard error
+> - Under the previous assumptions, we have
+    $$
+    Var(b_1|x_i) = \frac{\sigma^2}{\sum_i^N (x_i - \bar{x})^2}
+    $$
+> - In practice we don't know $\sigma^2$ and *estimate* it with residuals $e_i$:
+    $$
+    s^2 = \frac{SSR}{n} = \frac{\sum_{i=1}^n (y_i - b_0 - b_1 x_i)^2}{n} =  \frac{\sum_{i=1}^n e_i^2}{n}
+    $$
+    ($n-p$ in small samples). $s^2$ is the *mean squared error*.
+
+## Standard Error of $b_1$
+
+> - Variance is thus
+    $$
+    Var(b_1|x_i) = \frac{1}{n}\frac{SSR}{\sum_i^N (x_i - \bar{x})^2} = \frac{1}{n}\frac{SSR}{SST}
+    $$
+> - You clearly see that the variance shrinks as $n\to\infty$.
+
+## $b_0$ and $b_1$ are *Estimates*
+
+> - Previously, we repeatedly saw 
+    $$ y_i = b_0 + b_1 x_i + e_i $$
+> - `R` reports *estimates* $b_0$ and $b_1$. Both estimate underlying *population parameters* $\beta_0$ and $\beta_1$
+> - Estimates **always** come with some degree of uncertainty.
+> - $Var(b_1|x_i)$ measures how much uncertainty.
+> - `r emo::ji("bulb")` For each different sample $\{x_i,y_i\}_{i=1}^n$ we'll get a different $b_1$!
+
+## App!
+
+```{r,eval=FALSE}
+library(ScPoEconometrics)
+launchApp("estimate")
+```
+
+## $b_0$ and $b_1$ are *just like* $\bar{x}$! {.build}
+
+* In the app, you see that larger $N$ implies higher precision of $\bar{x}$
+* Density becomes *normal* for large $N$.
+
+## App!
+
+```{r,eval=FALSE}
+library(ScPoEconometrics)
+launchApp("standard_errors_simple") 
+```
+
+
+## App!
+
+```{r,eval=FALSE}
+library(ScPoEconometrics)
+launchApp("standard_errors_changeN") 
+```
+
+# Finally: `***` Stars!
+
+## Regression Output {.smaller}
+
+1. Now we know what `Std. Error` means.
+2. What about the rest?
+
+```{r t2, echo=FALSE}
+l1 = lm(mpg ~ wt + hp, mtcars)
+summary(l1)
+```
+
+## Normal sampling distribution
+> - Under the linear model assumptions, we have
+  $$b_1 \sim \mathcal{N}(\beta_1, Var(b_1))$$
+> - We can re-write it as
+  $$\frac{(b_1 - \beta_1)}{\sqrt{Var(b_1)}} \sim \mathcal{N}(0,1)$$
+
+> - But in real life, we don't know the standard deviation of $b_1$, we only have its estimate:
+$$Var(b_1 |x) = \frac{1}{n}\frac{SSR}{SST}$$
+
+## Student's T-Distribution and Testing
+
+> - When using the standard error we get a statistics that follows a Student distribution
+> - Similar in shape to the Normal Distribution (in large samples: identical)
+> - If $\varepsilon \sim \mathcal{N}(0,\sigma^2)$, then $(b_k - \beta_k) / sd(b_k)$ follows the T distribution with $N-K$ degrees of freedom.
+> - We use this statistics to test the *significance* of a single parameter.
+
+## Hypothesis testing 1/
+
+> - Once we have this *t-statistic* along with its distribution, we can run some hypothesis testing.
+> - An hypothesis is an assumption on the DGP, for example on the value of some parameter.
+> - We need to define a *null* hypothesis $H_0$ which we want to confront to an *alternative* hypothesis $H_1$.
+> - Most of the time, we want to test:
+$$
+H_0: \beta_k = 0 \\
+H_1: \beta_k \neq 0 \\
+$$
+
+## Hypothesis testing 2/
+
+
+
+
